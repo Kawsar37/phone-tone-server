@@ -8,6 +8,10 @@ import dotenv from "dotenv";
 import connectDB from "./config/db";
 import authRoutes from "./routes/auth.routes";
 import phoneRoutes from "./routes/phone.routes";
+import cartRoutes from "./routes/cart.routes";
+import orderRoutes from "./routes/order.routes";
+import userRoutes from "./routes/user.routes";
+import reviewRoutes from "./routes/review.routes";
 
 dotenv.config();
 
@@ -31,14 +35,14 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-// --- ROUTES WILL GO HERE ---
-// app.use("/api/auth", authRoutes);
-// app.use("/api/phones", phoneRoutes);
-
+// All Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/phones", phoneRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/reviews", reviewRoutes);
 
-// --- GLOBAL ERROR HANDLER ---
 app.use((err: any, req: Request, res: Response, next: Function) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
@@ -47,7 +51,6 @@ app.use((err: any, req: Request, res: Response, next: Function) => {
   });
 });
 
-// --- START SERVER ---
 const startServer = async () => {
   try {
     await connectDB();

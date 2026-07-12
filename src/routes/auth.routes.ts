@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { verifyToken } from "@/middlewares/auth";
-import { getMe, login, logout, register } from "@/controllers/auth.controller";
+import { register, login, logout, getMe } from "../controllers/auth.controller";
+import { verifyToken } from "../middlewares/auth";
 
 const router = Router();
 router.post("/register", register);

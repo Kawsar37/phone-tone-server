@@ -8,6 +8,13 @@ const generateToken = (id: string, role: string) => {
   });
 };
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none" as const,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
@@ -20,12 +27,7 @@ export const register = async (req: Request, res: Response) => {
     const user = await User.create({ name, email, password });
     const token = generateToken(user._id.toString(), user.role);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, cookieOptions);
     res
       .status(201)
       .json({
@@ -56,12 +58,8 @@ export const login = async (req: Request, res: Response) => {
         .json({ success: false, message: "Your account has been blocked." });
 
     const token = generateToken(user._id.toString(), user.role);
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+
+    res.cookie("token", token, cookieOptions);
     res
       .status(200)
       .json({
@@ -79,7 +77,8 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = (req: Request, res: Response) => {
-  res.clearCookie("token");
+  // Must match the options used to set the cookie to clear it properly
+  res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "none" });
   res.status(200).json({ success: true, message: "Logged out successfully." });
 };
 

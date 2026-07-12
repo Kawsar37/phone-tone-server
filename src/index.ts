@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
 import authRoutes from "./routes/auth.routes";
+import phoneRoutes from "./routes/phone.routes";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.get("/", (req: Request, res: Response) => {
 // app.use("/api/phones", phoneRoutes);
 
 app.use("/api/auth", authRoutes);
+app.use("/api/phones", phoneRoutes);
 
 // --- GLOBAL ERROR HANDLER ---
 app.use((err: any, req: Request, res: Response, next: Function) => {

@@ -20,23 +20,15 @@ dotenv.config();
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect database once
-connectDB().catch((err) => {
-  console.error("MongoDB Connection Error:", err);
-});
-
-console.log("CLIENT_URL:", process.env.CLIENT_URL);
-
-// CORS
-const corsOptions = {
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// Middleware
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -59,9 +51,9 @@ app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
 
-// Global Error Handler
+// Global Error Handler (Must be LAST)
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
+  console.error(err);
 
   res.status(err.status || 500).json({
     success: false,
@@ -69,12 +61,18 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-// Start local server only
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
-  });
-}
+// Start Server
+const startServer = async () => {
+  try {
+    await connectDB();
 
-// Export for Vercel Serverless
-export default app;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

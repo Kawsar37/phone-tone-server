@@ -12,6 +12,7 @@ import cartRoutes from "./routes/cart.routes";
 import orderRoutes from "./routes/order.routes";
 import userRoutes from "./routes/user.routes";
 import reviewRoutes from "./routes/review.routes";
+import adminRoutes from "./routes/admin.routes";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((err: any, req: Request, res: Response, next: Function) => {
   console.error(err.stack);

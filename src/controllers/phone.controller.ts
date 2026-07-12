@@ -128,3 +128,20 @@ export const deletePhone = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const updatePhone = async (req: AuthRequest, res: Response) => {
+  try {
+    const phone = await Phone.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!phone)
+      return res
+        .status(404)
+        .json({ success: false, message: "Phone not found." });
+    res
+      .status(200)
+      .json({ success: true, message: "Phone updated successfully.", phone });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

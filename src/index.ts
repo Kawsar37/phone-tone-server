@@ -1,8 +1,12 @@
+import dns from "node:dns";
+dns.setServers(["1.1.1.1", "1.0.0.1"]);
+
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
+import authRoutes from "./routes/auth.routes";
 
 dotenv.config();
 
@@ -29,6 +33,8 @@ app.get("/", (req: Request, res: Response) => {
 // --- ROUTES WILL GO HERE ---
 // app.use("/api/auth", authRoutes);
 // app.use("/api/phones", phoneRoutes);
+
+app.use("/api/auth", authRoutes);
 
 // --- GLOBAL ERROR HANDLER ---
 app.use((err: any, req: Request, res: Response, next: Function) => {

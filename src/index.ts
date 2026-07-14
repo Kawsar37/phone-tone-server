@@ -1,10 +1,12 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import dns from "node:dns";
 dns.setServers(["1.1.1.1", "1.0.0.1"]);
 
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 
 import connectDB from "./config/db";
 import authRoutes from "./routes/auth.routes";
@@ -14,8 +16,6 @@ import orderRoutes from "./routes/order.routes";
 import userRoutes from "./routes/user.routes";
 import reviewRoutes from "./routes/review.routes";
 import adminRoutes from "./routes/admin.routes";
-
-dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.PORT || 5000;

@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
@@ -11,9 +14,8 @@ interface MongooseCache {
   promise: Promise<typeof mongoose> | null;
 }
 
-// Extend the global Node.js object to store the cache
 declare global {
-  // eslint-disable-next-line no-var
+
   var mongooseCache: MongooseCache | undefined;
 }
 
@@ -27,7 +29,6 @@ if (!global.mongooseCache) {
 }
 
 async function connectDB() {
-  // If we already have a connection, use it (Prevents multiple connections in serverless)
   if (cached.conn) {
     return cached.conn;
   }
@@ -35,7 +36,7 @@ async function connectDB() {
   if (!cached.promise) {
     cached.promise = mongoose
       .connect(MONGODB_URI, {
-        dbName: "phonetone", // Force the database name
+        dbName: "phonetone",
       })
       .then((mongooseInstance) => {
         console.log("✅ MongoDB Connected (Serverless Cached)");

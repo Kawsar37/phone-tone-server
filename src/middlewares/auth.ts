@@ -10,11 +10,20 @@ export const verifyToken = (
   res: Response,
   next: NextFunction,
 ) => {
-  const token = req.cookies.token;
-  if (!token)
+  const authHeader = req.headers.authorization;
+  let token = authHeader?.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : null;
+
+  if (!token) {
+    token = req.cookies?.token;
+  }
+
+  if (!token) {
     return res
       .status(401)
       .json({ success: false, message: "Access denied. No token provided." });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
@@ -33,12 +42,10 @@ export const verifyToken = (
 export const authorizeRoles = (...roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Forbidden. Insufficient permissions.",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden. Insufficient permissions.",
+      });
     }
     next();
   };

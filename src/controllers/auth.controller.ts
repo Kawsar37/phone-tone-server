@@ -28,17 +28,16 @@ export const register = async (req: Request, res: Response) => {
     const token = generateToken(user._id.toString(), user.role);
 
     res.cookie("token", token, cookieOptions);
-    res
-      .status(201)
-      .json({
-        success: true,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-      });
+    res.status(201).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -60,35 +59,39 @@ export const login = async (req: Request, res: Response) => {
     const token = generateToken(user._id.toString(), user.role);
 
     res.cookie("token", token, cookieOptions);
-    res
-      .status(200)
-      .json({
-        success: true,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-      });
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
 export const logout = (req: Request, res: Response) => {
-  // Must match the options used to set the cookie to clear it properly
   res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "none" });
   res.status(200).json({ success: true, message: "Logged out successfully." });
 };
 
 export const getMe = async (req: Request, res: Response) => {
   try {
-    const token = req.cookies.token;
+    const authHeader = req.headers.authorization;
+    let token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
+    if (!token) token = req.cookies.token;
+
     if (!token)
       return res
         .status(401)
         .json({ success: false, message: "Not authenticated." });
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       id: string;
     };
